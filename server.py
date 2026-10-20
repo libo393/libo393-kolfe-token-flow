@@ -85,7 +85,7 @@ def login():
                     return redirect(url_for('setup_password'))
                 return redirect(url_for('index'))
         flash('Invalid username or password!', 'error')
-    return render_template('login.html')
+    return render_template('login.html', setup_mode=False)
 
 @app.route('/setup-password', methods=['GET', 'POST'])
 @login_required
