@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Include HTML5 QR Code Scanner Library from CDN -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+<div class="space-y-8 pb-12 max-w-5xl mx-auto">
+
+    <!-- Header Banner & Stats -->
+    <div class="bg-emerald-950/70 backdrop-blur-xl border border-emerald-800/80 p-8 rounded-3xl shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div class="space-y-2">
+            <span class="bg-teal-500/20 border border-teal-500/40 text-teal-300 text-xs px-3.5 py-1.5 rounded-full font-extrabold uppercase tracking-widest">
+                Merchant Workspace
+            </span>
+            <h2 class="text-3xl font-black text-white">Redeem Employee Tokens 🌿</h2>
+            <p class="text-emerald-200 text-sm">Scan employee QR cards live with your camera or enter ID details.</p>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <div class="bg-slate-900/90 border border-emerald-800 px-4 py-3 rounded-2xl text-center shadow-lg">
+                <span class="text-[10px] text-emerald-400 uppercase tracking-wider block font-bold">Today's Collection</span>
+                <span class="text-lg text-emerald-300 font-black">{{ daily_collected }} Tokens</span>
+            </div>
+            <div class="bg-slate-900/90 border border-teal-800 px-4 py-3 rounded-2xl text-center shadow-lg">
+                <span class="text-[10px] text-teal-400 uppercase tracking-wider block font-bold">Total Collection</span>
+                <span class="text-lg text-teal-300 font-black">{{ total_collected }} Tokens</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scanner & Deduction Card -->
+    <div class="bg-emerald-950/70 backdrop-blur-xl border border-emerald-800/80 p-8 rounded-3xl shadow-2xl space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-emerald-800/60 pb-4">
+            <div>
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><span>📷</span> Live QR Camera Scanner & Deduction</h3>
+                <p class="text-xs text-emerald-300 mt-1">Use your camera to scan an employee QR card or type their ID manually.</p>
+            </div>
+            <button type="button" onclick="toggleScanner()" id="scannerToggleBtn" class="bg-teal-600 hover:bg-teal-500 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs transition shadow">
+                📷 Open Camera Scanner
+            </button>
+        </div>
+
+        <!-- Live Camera Viewport (Hidden by default) -->
+        <div id="scannerContainer" class="hidden max-w-md mx-auto bg-slate-900 p-4 rounded-2xl border border-emerald-800">
+            <div id="reader"></div>
+            <p class="text-center text-xs text-emerald-400 mt-2">Point your camera at the employee's QR code card.</p>
+        </div>
+
+        <form id="deductForm" onsubmit="handleDeduction(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <div>
+                <label class="block text-xs font-semibold text-emerald-200 mb-1.5">Employee QR Code / ID</label>
+                <input type="text" id="qr_code" required placeholder="e.g. EMP-1094-Name" class="w-full bg-slate-900 border border-emerald-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-400 font-mono">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-emerald-200 mb-1.5">Redemption Amount (Tokens)</label>
+                <input type="number" step="0.5" id="amount" value="1.0" required class="w-full bg-slate-900 border border-emerald-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-400 font-mono">
+            </div>
+
+            <div class="flex items-end">
+                <button type="submit" class="w-full bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-black py-3.5 px-6 rounded-xl shadow-lg transition text-xs uppercase tracking-wider">
+                    Confirm Redemption →
+                </button>
+            </div>
+        </form>
+
+        <!-- Result Feedback Box -->
+        <div id="resultBox" class="hidden p-5 rounded-2xl border text-sm font-medium transition-all"></div>
+    </div>
+
+    <!-- Merchant's Recent Transactions Table -->
+    <div class="bg-emerald-950/70 backdrop-blur-xl border border-emerald-800/80 p-8 rounded-3xl shadow-2xl space-y-4">
+        <h3 class="text-xl font-bold text-white flex items-center gap-2"><span>📜</span> Your Processed Redemptions</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-emerald-100">
+                <thead class="bg-emerald-900/80 uppercase text-xs text-emerald-300">
+                    <tr>
+                        <th class="p-3">Date & Time</th>
+                        <th class="p-3">Employee Name</th>
+                        <th class="p-3">Sector</th>
+                        <th class="p-3 text-right">Tokens Collected</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-emerald-900">
+                    {% for tx in transactions %}
+                    <tr class="hover:bg-emerald-900/30 transition">
+                        <td class="p-3 text-xs text-emerald-400 font-mono">{{ tx.timestamp }}</td>
+                        <td class="p-3 font-bold text-white">{{ tx.employee.full_name }}</td>
+                        <td class="p-3 text-emerald-200">{{ tx.employee.sector }}</td>
+                        <td class="p-3 text-right text-emerald-400 font-extrabold">+{{ tx.tokens_deducted }} Tokens</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="p-6 text-center text-emerald-400 text-sm">No redemptions processed yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+let html5QrCode = null;
+let scannerIsRunning = false;
+
+function toggleScanner() {
+    const container = document.getElementById('scannerContainer');
+    const btn = document.getElementById('scannerToggleBtn');
+
+    if (!scannerIsRunning) {
+        container.classList.remove('hidden');
+        btn.innerText = "🛑 Close Camera Scanner";
+        scannerIsRunning = true;
+
+        html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            (decodedText, decodedResult) => {
+                // Successfully scanned QR code!
+                document.getElementById('qr_code').value = decodedText;
+                toggleScanner(); // Close scanner
+                // Optional: Auto submit deduction
+            },
+            (errorMessage) => {
+                // Scanning framing errors (ignore)
+            }
+        ).catch(err => {
+            alert("Unable to access camera. Please check camera permissions.");
+            toggleScanner();
+        });
+    } else {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                container.classList.add('hidden');
+                btn.innerText = "📷 Open Camera Scanner";
+                scannerIsRunning = false;
+            }).catch(err => console.log("Failed to stop scanner", err));
+        } else {
+            container.classList.add('hidden');
+            btn.innerText = "📷 Open Camera Scanner";
+            scannerIsRunning = false;
+        }
+    }
+}
+
+async function handleDeduction(event) {
+    event.preventDefault();
+    const qr_code = document.getElementById('qr_code').value;
+    const amount = document.getElementById('amount').value;
+    const resultBox = document.getElementById('resultBox');
+
+    try {
+        const response = await fetch('/api/deduct', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qr_code, amount })
+        });
+        const data = await response.json();
+        
+        resultBox.classList.remove('hidden');
+        if (data.success) {
+            resultBox.className = "p-5 rounded-2xl border bg-emerald-500/20 border-emerald-500 text-emerald-200 space-y-1 shadow-lg";
+            resultBox.innerHTML = `
+                <div class="font-bold text-base">✅ ${data.message}</div>
+                <div class="text-xs text-emerald-300">Employee: <strong>${data.employee_name}</strong> | Remaining Balance: <span class="text-amber-400 font-black text-sm">${data.new_balance} Tokens</span></div>
+            `;
+            document.getElementById('qr_code').value = '';
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            resultBox.className = "p-5 rounded-2xl border bg-rose-500/20 border-rose-500 text-rose-200 shadow-lg";
+            resultBox.innerHTML = `<div class="font-bold">❌ Error: ${data.message}</div>`;
+        }
+    } catch (err) {
+        resultBox.classList.remove('hidden');
+        resultBox.className = "p-5 rounded-2xl border bg-rose-500/20 border-rose-500 text-rose-200 shadow-lg";
+        resultBox.innerHTML = `<div class="font-bold">❌ Connection error processing transaction.</div>`;
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center px-4">
+    <div class="max-w-4xl w-full bg-emerald-950/70 backdrop-blur-2xl border border-emerald-800/80 rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        
+        <!-- Left Side: Branding / Hero Message -->
+        <div class="p-8 md:p-12 bg-gradient-to-br from-emerald-900/60 to-teal-950/80 flex flex-col justify-between border-b md:border-b-0 md:border-r border-emerald-800/80">
+            <div class="space-y-4">
+                <span class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs px-3.5 py-1.5 rounded-full font-extrabold uppercase tracking-widest">
+                    Smart Token Management
+                </span>
+                <h2 class="text-3xl md:text-4xl font-black text-white leading-tight">
+                    One scan.<br>Simple redemption.
+                </h2>
+                <p class="text-emerald-200 text-sm leading-relaxed">
+                    Securely manage Kolfe-Keraniyo employee allowances, track merchant collections, and audit every transaction in one place.
+                </p>
+            </div>
+            <div class="pt-6 border-t border-emerald-800/60 flex items-center space-x-2 text-xs text-emerald-300 font-medium">
+                <span>🌿 Balance tracking</span>
+                <span>•</span>
+                <span>QR identity</span>
+                <span>•</span>
+                <span>Reports</span>
+            </div>
+        </div>
+
+        <!-- Right Side: Login Form -->
+        <div class="p-8 md:p-12 flex flex-col justify-center">
+            <div class="mb-6">
+                <h3 class="text-2xl font-black text-white">
+                    {% if setup_mode %}Setup Password{% else %}Sign In{% endif %}
+                </h3>
+                <p class="text-emerald-300 text-xs mt-1">
+                    {% if setup_mode %}Create your secure password to activate your account.{% else %}Enter username. Leave password blank if logging in for the first time.{% endif %}
+                </p>
+            </div>
+
+            <form method="POST" class="space-y-4">
+                {% if setup_mode %}
+                <div>
+                    <label class="block text-xs font-semibold text-emerald-200 mb-1.5">New Secure Password</label>
+                    <input type="password" name="new_password" required placeholder="At least 6 characters" class="w-full bg-slate-900/80 border border-emerald-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                </div>
+                {% else %}
+                <div>
+                    <label class="block text-xs font-semibold text-emerald-200 mb-1.5">Username / ID Code</label>
+                    <input type="text" name="username" required placeholder="e.g. admin or 1094" class="w-full bg-slate-900/80 border border-emerald-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-emerald-200 mb-1.5">Password <span class="text-emerald-400/60 font-normal">(Leave blank if first time)</span></label>
+                    <input type="password" name="password" placeholder="••••••••" class="w-full bg-slate-900/80 border border-emerald-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                </div>
+                {% endif %}
+
+                <button type="submit" class="w-full bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-black py-3.5 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 text-sm">
+                    {% if setup_mode %}Save Password & Login →{% else %}Sign In to Portal →{% endif %}
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-xs text-emerald-400/80">Need access? Contact your system administrator.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

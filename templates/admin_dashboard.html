@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-8 pb-12">
+
+    <!-- Top Control Bar -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-emerald-950/65 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl">
+        <div>
+            <h2 class="text-3xl font-black text-white">Admin Control Center</h2>
+            <p class="text-emerald-300 text-sm mt-1">Kolfe-Keraniyo Sub-City Token & Merchant Management System</p>
+        </div>
+        <div>
+            <button onclick="window.print()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl text-xs transition shadow-lg flex items-center gap-2">
+                🖨️ Print Dashboard View
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Stats Overview -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-emerald-950/65 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Registered Employees</span>
+            <div class="text-3xl font-black text-white mt-2">{{ employees|length }}</div>
+        </div>
+        <div class="bg-emerald-950/65 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl">
+            <span class="text-xs font-bold text-teal-400 uppercase tracking-wider">Active Merchants</span>
+            <div class="text-3xl font-black text-white mt-2">{{ merchants|length }}</div>
+        </div>
+        <div class="bg-emerald-950/60 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl">
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Sectors / Folders</span>
+            <div class="text-3xl font-black text-white mt-2">{{ sectors|length }}</div>
+        </div>
+        <div class="bg-emerald-950/60 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl">
+            <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">Total Transactions</span>
+            <div class="text-3xl font-black text-white mt-2">{{ transactions|length }}</div>
+        </div>
+    </div>
+
+    <!-- Main Action Cards -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Card 1: Add Single User -->
+        <div class="bg-emerald-950/65 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl space-y-4">
+            <h3 class="text-lg font-bold text-emerald-300 flex items-center gap-2"><span>➕</span> Add Single User</h3>
+            <form method="POST" class="space-y-3">
+                <input type="hidden" name="action" value="create_single">
+                <div>
+                    <label class="block text-xs font-medium text-emerald-300 mb-1">Role Type</label>
+                    <select name="role" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                        <option value="employee">Employee</option>
+                        <option value="merchant">Merchant</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-emerald-300 mb-1">ID / Username</label>
+                    <input type="text" name="username" required placeholder="e.g. 1094" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-emerald-300 mb-1">Full Name (Amharic / English)</label>
+                    <input type="text" name="full_name" required placeholder="e.g. መሚዲያስ ግዛታቸው" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-emerald-300 mb-1">Sector / Department</label>
+                    <input type="text" name="sector" placeholder="e.g. ከተማ ውበት" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-emerald-300 mb-1">Position / Title</label>
+                    <input type="text" name="position" placeholder="e.g. ኃላፊ" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-extrabold py-3 rounded-xl text-xs transition shadow-lg">Create Account</button>
+            </form>
+        </div>
+
+        <!-- Card 2: Bulk Upload & Monthly Allocations -->
+        <div class="bg-emerald-950/65 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl space-y-6">
+            <!-- Bulk Upload -->
+            <div>
+                <h3 class="text-lg font-bold text-teal-300 mb-3 flex items-center gap-2"><span>📂</span> Bulk Excel / CSV Upload</h3>
+                <form method="POST" enctype="multipart/form-data" class="space-y-3">
+                    <input type="hidden" name="action" value="bulk_upload">
+                    <select name="bulk_role" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                        <option value="employee">Employees</option>
+                        <option value="merchant">Merchants</option>
+                    </select>
+                    <input type="file" name="file" accept=".xlsx, .csv" required class="w-full text-xs text-emerald-200 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-600 file:text-slate-950 hover:file:bg-teal-500">
+                    <button type="submit" class="w-full bg-teal-600 hover:bg-teal-500 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition shadow-lg">Upload & Import File</button>
+                </form>
+            </div>
+
+            <!-- Monthly Allocation -->
+            <div class="pt-4 border-t border-emerald-800/80">
+                <h3 class="text-lg font-bold text-amber-300 mb-3 flex items-center gap-2"><span>🪙</span> Monthly Token Release</h3>
+                <form method="POST" class="space-y-3">
+                    <input type="hidden" name="action" value="allocate_tokens">
+                    <select name="target_type" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                        <option value="all_employees">All Employees</option>
+                        <option value="sector">By Specific Sector</option>
+                    </select>
+                    <input type="text" name="sector_name" placeholder="Sector Name (if by sector)" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                    <input type="number" step="0.5" name="amount" placeholder="Token Amount (e.g. 10)" required class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition shadow-lg">Release Allocation</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Card 3: Bulk Management & QR Printing -->
+        <div class="bg-emerald-950/65 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl space-y-6">
+            <div>
+                <h3 class="text-lg font-bold text-purple-300 mb-3 flex items-center gap-2"><span>🖨️</span> Print QR ID Cards</h3>
+                <form action="{{ url_for('print_bulk_qr') }}" method="GET" target="_blank" class="space-y-3">
+                    <select name="sector" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                        <option value="">All Sectors (Bulk Print)</option>
+                        {% for sec in sectors %}
+                        <option value="{{ sec }}">{{ sec }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-extrabold py-2.5 rounded-xl text-xs transition shadow-lg">Print QR Cards</button>
+                </form>
+            </div>
+
+            <!-- Bulk Password Resets & Deletions -->
+            <div class="pt-4 border-t border-emerald-800/80 space-y-3">
+                <h3 class="text-lg font-bold text-rose-300 mb-2 flex items-center gap-2"><span>⚠️</span> Bulk Actions</h3>
+                
+                <form method="POST" onsubmit="return confirm('Are you sure you want to reset passwords for all accounts in this category?')" class="flex gap-2">
+                    <input type="hidden" name="action" value="reset_all_passwords">
+                    <select name="bulk_password_role" class="w-full bg-slate-900 border border-rose-900/60 rounded-xl p-2 text-xs text-white">
+                        <option value="employee">All Employees</option>
+                        <option value="merchant">All Merchants</option>
+                    </select>
+                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 py-2 rounded-xl text-xs whitespace-nowrap">Reset Passwords</button>
+                </form>
+
+                <form method="POST" onsubmit="return confirm('WARNING: This will delete ALL accounts in this category permanently!')" class="flex gap-2">
+                    <input type="hidden" name="action" value="delete_bulk">
+                    <select name="bulk_delete_role" class="w-full bg-slate-900 border border-rose-900/60 rounded-xl p-2 text-xs text-white">
+                        <option value="employee">All Employees</option>
+                        <option value="merchant">All Merchants</option>
+                    </select>
+                    <button type="submit" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-3 py-2 rounded-xl text-xs whitespace-nowrap">Delete All</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Registered Employees Organized by Sector Folders -->
+    <div class="bg-emerald-950/65 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><span>📂</span> Employee Sector Folders (1,500+ Staff Organized)</h3>
+                <p class="text-xs text-emerald-300 mt-1">Click on any department folder below to expand and view its staff members.</p>
+            </div>
+            <!-- Quick Search Bar -->
+            <div class="w-full md:w-72">
+                <input type="text" id="employeeSearch" onkeyup="filterEmployees()" placeholder="🔍 Search employee by name or ID..." class="w-full bg-slate-900 border border-emerald-800 rounded-xl px-4 py-2 text-xs text-white focus:ring-2 focus:ring-emerald-400">
+            </div>
+        </div>
+
+        <!-- Accordion Folders by Sector -->
+        <div class="space-y-4" id="sectorFoldersContainer">
+            {% set grouped_employees = {} %}
+            {% for emp in employees %}
+                {% set sec = emp.sector if emp.sector and emp.sector != 'nan' else 'General / Unassigned' %}
+                {% if sec not in grouped_employees %}
+                    {% set _ = grouped_employees.update({sec: []}) %}
+                {% endif %}
+                {% set _ = grouped_employees[sec].append(emp) %}
+            {% endfor %}
+
+            {% for sector_name, emp_list in grouped_employees.items() %}
+            <div class="border border-emerald-800/80 rounded-2xl bg-slate-900/60 overflow-hidden shadow-lg sector-folder-card">
+                <!-- Folder Header Button -->
+                <button onclick="toggleFolder('folder-{{ loop.index }}')" class="w-full px-6 py-4 bg-emerald-900/60 hover:bg-emerald-900/90 flex justify-between items-center transition text-left">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">📁</span>
+                        <div>
+                            <h4 class="text-base font-bold text-white">{{ sector_name }}</h4>
+                            <span class="text-xs text-emerald-300 font-medium">{{ emp_list|length }} Employees Registered</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <a href="{{ url_for('print_bulk_qr', sector=sector_name) }}" target="_blank" onclick="event.stopPropagation()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow">🖨️ Print Sector QR</a>
+                        <span id="icon-folder-{{ loop.index }}" class="text-emerald-400 font-bold text-lg">▼</span>
+                    </div>
+                </button>
+
+                <!-- Folder Content (Collapsed by default) -->
+                <div id="folder-{{ loop.index }}" class="hidden p-4 border-t border-emerald-800/60 overflow-x-auto">
+                    <table class="w-full text-left text-sm text-emerald-100 employee-table">
+                        <thead class="bg-emerald-950 uppercase text-xs text-emerald-300">
+                            <tr>
+                                <th class="p-3">ID</th>
+                                <th class="p-3">Full Name</th>
+                                <th class="p-3">Position</th>
+                                <th class="p-3">Tokens</th>
+                                <th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-emerald-900/60">
+                            {% for emp in emp_list %}
+                            <tr class="hover:bg-emerald-900/30 transition employee-row">
+                                <td class="p-3 font-mono text-emerald-300 emp-id">{{ emp.username }}</td>
+                                <td class="p-3 font-bold text-white emp-name">{{ emp.full_name }}</td>
+                                <td class="p-3 text-emerald-200">{{ emp.position or '-' }}</td>
+                                <td class="p-3 text-amber-400 font-extrabold">{{ emp.token_balance }}</td>
+                                <td class="p-3 text-right space-x-2">
+                                    <a href="{{ url_for('print_qr', user_id=emp.id) }}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow">🖨️ Print ID</a>
+                                    
+                                    <form method="POST" action="{{ url_for('admin_dashboard') }}" style="display:inline;" onsubmit="return confirm('Reset password for {{ emp.full_name }}?')">
+                                        <input type="hidden" name="action" value="reset_password">
+                                        <input type="hidden" name="user_id" value="{{ emp.id }}">
+                                        <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow">🔑 Reset Pass</button>
+                                    </form>
+
+                                    <form method="POST" action="{{ url_for('admin_dashboard') }}" style="display:inline;" onsubmit="return confirm('Delete employee {{ emp.full_name }}?')">
+                                        <input type="hidden" name="action" value="delete_user">
+                                        <input type="hidden" name="user_id" value="{{ emp.id }}">
+                                        <button type="submit" class="bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow">🗑️ Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="p-6 text-center text-emerald-400 text-sm">No employees registered yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Active Merchants Table -->
+    <div class="bg-emerald-950/65 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl space-y-4">
+        <h3 class="text-xl font-bold text-white flex items-center gap-2"><span>🏪</span> Active Merchants (Manage Accounts)</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-emerald-100">
+                <thead class="bg-emerald-900/80 uppercase text-xs text-emerald-300">
+                    <tr>
+                        <th class="p-3">Merchant ID</th>
+                        <th class="p-3">Business / Full Name</th>
+                        <th class="p-3 text-right">Actions (Reset / Delete)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-emerald-900">
+                    {% for m in merchants %}
+                    <tr class="hover:bg-emerald-900/30 transition">
+                        <td class="p-3 font-mono text-teal-300">{{ m.username }}</td>
+                        <td class="p-3 font-bold text-white">{{ m.full_name }}</td>
+                        <td class="p-3 text-right space-x-2">
+                            <form method="POST" action="{{ url_for('admin_dashboard') }}" style="display:inline;" onsubmit="return confirm('Reset password for merchant {{ m.full_name }}?')">
+                                <input type="hidden" name="action" value="reset_password">
+                                <input type="hidden" name="user_id" value="{{ m.id }}">
+                                <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow">🔑 Reset Pass</button>
+                            </form>
+
+                            <form method="POST" action="{{ url_for('admin_dashboard') }}" style="display:inline;" onsubmit="return confirm('Delete merchant {{ m.full_name }}?')">
+                                <input type="hidden" name="action" value="delete_user">
+                                <input type="hidden" name="user_id" value="{{ m.id }}">
+                                <button type="submit" class="bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow">🗑️ Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="p-6 text-center text-teal-400 text-sm">No merchants registered yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Merchant Redemption & Transaction Reports -->
+    <div class="bg-emerald-950/65 backdrop-blur-xl border border-emerald-800/80 p-6 rounded-3xl shadow-xl space-y-6">
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div>
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><span>📊</span> Merchant Redemption & Transaction Reports</h3>
+                <p class="text-xs text-emerald-300 mt-1">Filter token redemptions by specific merchant, daily/monthly period, and sector.</p>
+            </div>
+            
+            <div class="bg-amber-500/20 border border-amber-500/50 px-4 py-2.5 rounded-2xl text-amber-300 text-xs font-bold">
+                Total Filtered Tokens Redeemed: <span class="text-base text-amber-400 font-black ml-1">{{ total_tokens_redeemed }}</span>
+            </div>
+        </div>
+
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-900/80 p-4 rounded-2xl border border-emerald-800">
+            <div>
+                <label class="block text-xs text-emerald-300 font-semibold mb-1">Merchant</label>
+                <select name="merchant_id" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                    <option value="">All Merchants</option>
+                    {% for m in merchants %}
+                    <option value="{{ m.id }}" {% if selected_merchant_id == m.id|string %}selected{% endif %}>{{ m.full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-emerald-300 font-semibold mb-1">Sector</label>
+                <select name="sector_filter" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                    <option value="">All Sectors</option>
+                    {% for sec in sectors %}
+                    <option value="{{ sec }}" {% if selected_sector == sec %}selected{% endif %}>{{ sec }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-emerald-300 font-semibold mb-1">Period Type</label>
+                <select name="period_filter" id="period_select" onchange="toggleDateInput()" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+                    <option value="">All Time</option>
+                    <option value="daily" {% if selected_period == 'daily' %}selected{% endif %}>Daily</option>
+                    <option value="monthly" {% if selected_period == 'monthly' %}selected{% endif %}>Monthly</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-emerald-300 font-semibold mb-1">Date / Month</label>
+                <input type="text" id="report_date" name="report_date" value="{{ selected_date }}" placeholder="YYYY-MM-DD or YYYY-MM" class="w-full bg-slate-900 border border-emerald-800 rounded-xl p-2.5 text-xs text-white">
+            </div>
+
+            <div class="flex items-end gap-2">
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition shadow">Filter</button>
+                <button type="button" onclick="window.print()" class="bg-teal-600 hover:bg-teal-500 text-slate-950 font-extrabold px-4 py-2.5 rounded-xl text-xs transition shadow">🖨️ Print</button>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-emerald-100">
+                <thead class="bg-emerald-900/80 uppercase text-xs text-emerald-300">
+                    <tr>
+                        <th class="p-3">Time & Date</th>
+                        <th class="p-3">Merchant</th>
+                        <th class="p-3">Employee Name</th>
+                        <th class="p-3">Sector</th>
+                        <th class="p-3">Tokens Redeemed</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-emerald-900">
+                    {% for tx in transactions %}
+                    <tr class="hover:bg-emerald-900/30 transition">
+                        <td class="p-3 text-xs text-emerald-400 font-mono">{{ tx.timestamp }}</td>
+                        <td class="p-3 font-bold text-teal-300">{{ tx.merchant.full_name }}</td>
+                        <td class="p-3 font-semibold text-white">{{ tx.employee.full_name }}</td>
+                        <td class="p-3 text-emerald-200">{{ tx.employee.sector }}</td>
+                        <td class="p-3 text-rose-400 font-extrabold">-{{ tx.tokens_deducted }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="p-6 text-center text-emerald-400 text-sm">No redemption records found for the selected criteria.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function toggleFolder(folderId) {
+    const content = document.getElementById(folderId);
+    const icon = document.getElementById('icon-' + folderId);
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.innerText = "▲";
+    } else {
+        content.classList.add('hidden');
+        icon.innerText = "▼";
+    }
+}
+
+function filterEmployees() {
+    const input = document.getElementById('employeeSearch').value.toLowerCase();
+    const folders = document.querySelectorAll('.sector-folder-card');
+
+    folders.forEach(folder => {
+        const rows = folder.querySelectorAll('.employee-row');
+        let folderHasMatch = false;
+
+        rows.forEach(row => {
+            const name = row.querySelector('.emp-name').innerText.toLowerCase();
+            const id = row.querySelector('.emp-id').innerText.toLowerCase();
+            if (name.includes(input) || id.includes(input)) {
+                row.style.display = "";
+                folderHasMatch = true;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        if (input === "") {
+            folder.style.display = "";
+        } else {
+            folder.style.display = folderHasMatch ? "" : "none";
+            // Auto open folder if searching
+            if (folderHasMatch) {
+                const content = folder.querySelector('[id^="folder-"]');
+                content.classList.remove('hidden');
+            }
+        }
+    });
+}
+
+function toggleDateInput() {
+    const period = document.getElementById('period_select').value;
+    const dateInput = document.getElementById('report_date');
+    if (period === 'daily') {
+        dateInput.type = 'date';
+    } else if (period === 'monthly') {
+        dateInput.type = 'month';
+    } else {
+        dateInput.type = 'text';
+        dateInput.placeholder = 'YYYY-MM-DD or YYYY-MM';
+    }
+}
+</script>
+{% endblock %}
